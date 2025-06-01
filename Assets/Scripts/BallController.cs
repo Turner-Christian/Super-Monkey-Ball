@@ -3,6 +3,7 @@ using UnityEngine;
 public class BallController : MonoBehaviour
 {
     public static BallController Instance; // Singleton instance for easy access
+    public Transform child;
     public float moveForce = 10f; // Force applied to the ball when moving
     public Rigidbody rb; // Reference to the ball's Rigidbody component
 
@@ -15,6 +16,7 @@ public class BallController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>(); // Get the Rigidbody component attached to the bal
     }
+
 
     void FixedUpdate()
     {
@@ -33,5 +35,16 @@ public class BallController : MonoBehaviour
         Vector3 moveDir = (camForward * moveZ + camRight * moveX).normalized;
 
         rb.AddForce(moveDir * moveForce);
+    }
+    void LateUpdate()
+    {
+        Vector3 velocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+
+        // Deadzone to avoid jitter when the ball is barely moving
+        if (velocity.sqrMagnitude > 0.01f)
+        {
+            // Make the child look in the direction of velocity, using its local Z axis
+            child.rotation = Quaternion.LookRotation(velocity.normalized, Vector3.up);
+        }
     }
 }
