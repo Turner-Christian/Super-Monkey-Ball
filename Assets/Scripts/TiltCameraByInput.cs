@@ -42,6 +42,7 @@ public class TiltCameraByInput : CinemachineExtension
 
             // Smooth tilt from surface angle
             float surfaceAngle = angleDetector != null ? angleDetector.surfaceAngle : 0f;
+
             float targetSurfaceTilt = surfaceAngle * 0.3f;
             currentSurfaceTilt = Mathf.Lerp(currentSurfaceTilt, targetSurfaceTilt, deltaTime * smoothSpeed);
 

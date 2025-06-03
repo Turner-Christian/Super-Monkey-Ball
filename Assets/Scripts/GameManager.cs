@@ -2,10 +2,12 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private float customGravity = -35f; // Custom gravity value
+    public static GameManager Instance; // Singleton instance for easy access
+    [SerializeField] private float _customGravity = -60f; // Custom gravity value
 
     void Awake()
     {
-        Physics.gravity = new Vector3(0, customGravity, 0); // Set custom gravity
+        Instance = this; // Set the singleton instance
+        Physics.gravity = new Vector3(0, _customGravity, 0); // Set custom gravity
     }
 }

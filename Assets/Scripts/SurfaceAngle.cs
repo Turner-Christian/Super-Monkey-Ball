@@ -3,7 +3,7 @@ using UnityEngine;
 public class SurfaceAngle : MonoBehaviour
 {
     public float surfaceAngle;
-    public float rayLength = 1.5f;
+    public float rayLength = 3f;
     public LayerMask groundMask;
 
     void Update()
@@ -23,7 +23,7 @@ public class SurfaceAngle : MonoBehaviour
             Debug.Log("No surface detected within ray length.");
         }
     }
-    
+
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
