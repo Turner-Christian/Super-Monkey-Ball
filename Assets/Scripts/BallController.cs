@@ -18,10 +18,16 @@ public class BallController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>(); // Get the Rigidbody component attached to the bal
+        GameManager.PlayerStartPosition = transform.position; // Set the player's start position
     }
 
     void FixedUpdate()
     {
+        if (!GameManager._playerAlive)
+        {
+            rb.linearVelocity = Vector3.zero; // Stop the ball if the player is not alive
+            return; // Exit early if the player is not alive
+        }
         float moveX = Input.GetAxis("Horizontal");
         float moveZ = Input.GetAxis("Vertical");
 
@@ -38,7 +44,7 @@ public class BallController : MonoBehaviour
 
         rb.AddForce(moveDir * moveForce);
 
-        if(rb.linearVelocity.magnitude > maxSpeed)
+        if (rb.linearVelocity.magnitude > maxSpeed)
         {
             rb.linearVelocity = rb.linearVelocity.normalized * maxSpeed; // Limit speed to 10 units
         }
@@ -56,6 +62,15 @@ public class BallController : MonoBehaviour
             // Make the child look in the direction of velocity, using its local Z axis
             child.rotation = Quaternion.LookRotation(velocity.normalized, Vector3.up);
             guy.rotation = Quaternion.LookRotation(velocity.normalized, Vector3.up);
+        }
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("DeathBox"))
+        {
+            GameManager._playerAlive = false; // Set player fallen state
+            Debug.Log("Ball has fallen off the map!");
         }
     }
 }

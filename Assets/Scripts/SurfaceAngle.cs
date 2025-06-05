@@ -20,7 +20,7 @@ public class SurfaceAngle : MonoBehaviour
         {
             // Reset angle if no surface is detected
             surfaceAngle = 0f;
-            Debug.Log("No surface detected within ray length.");
+            // Debug.Log("No surface detected within ray length.");
         }
     }
 
