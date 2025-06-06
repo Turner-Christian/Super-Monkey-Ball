@@ -3,12 +3,15 @@ using UnityEngine;
 public class BallController : MonoBehaviour
 {
     public static BallController Instance; // Singleton instance for easy access
+    public Animator GoalsAnimator; // Animator for goal animations
     public Transform child;
     public Transform guy;
+    public float decelerationSpeed = 2f; // Deceleration factor for the ball
     public float maxSpeed = 35f; // Maximum speed of the ball
     public float moveForce = 10f; // Force applied to the ball when moving
     public float mph; // Speed in miles per hour
     public Rigidbody rb; // Reference to the ball's Rigidbody component
+    private bool _shouldDecelerate = false; // Flag to indicate if the ball should decelerate
 
     void Awake()
     {
@@ -23,9 +26,20 @@ public class BallController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (!GameManager._playerAlive)
+        if (_shouldDecelerate)
         {
-            rb.linearVelocity = Vector3.zero; // Stop the ball if the player is not alive
+            // Decelerate the ball
+            Vector3 horizontalVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+            Vector3 slowedHorizontal = Vector3.Lerp(horizontalVelocity, Vector3.zero, Time.fixedDeltaTime * decelerationSpeed);
+            rb.linearVelocity = new Vector3(slowedHorizontal.x, rb.linearVelocity.y, slowedHorizontal.z);
+            if (rb.linearVelocity.magnitude < 0.1f) // Stop decelerating when close to zero
+            {
+                _shouldDecelerate = false;
+            }
+        }
+
+        if (!GameManager._playerAlive || Camera.main == null)
+        {
             return; // Exit early if the player is not alive
         }
         float moveX = Input.GetAxis("Horizontal");
@@ -48,6 +62,7 @@ public class BallController : MonoBehaviour
         {
             rb.linearVelocity = rb.linearVelocity.normalized * maxSpeed; // Limit speed to 10 units
         }
+
     }
 
     void LateUpdate()
@@ -71,6 +86,12 @@ public class BallController : MonoBehaviour
         {
             GameManager._playerAlive = false; // Set player fallen state
             Debug.Log("Ball has fallen off the map!");
+        }
+        if (other.CompareTag("GoalBox") && GameManager._playerAlive)
+        {
+            GoalsAnimator.SetTrigger("onGoal"); // Trigger goal animation
+            GameManager.goalScored = true; // Set goal scored state
+            _shouldDecelerate = true; // Set deceleration flag
         }
     }
 }

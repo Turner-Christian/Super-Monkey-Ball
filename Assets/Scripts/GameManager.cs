@@ -4,12 +4,15 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance; // Singleton instance for easy access
+    public Camera MainCamera; // Reference to the main camera
+    public Camera GoalCamera; // Reference to the goal camera
     public TextMeshProUGUI TimerText; // UI Text to display the timer
     public TextMeshProUGUI SpeedText; // UI Text to display the speed
     public static Vector3 PlayerStartPosition; // Position to respawn the player
     public static Vector3 PlayerStartRotation; // Rotation to respawn the player
     public static bool PlayerFallen;
     public static bool _playerAlive = true; // Flag to indicate if the player is alive
+    public static bool goalScored = false; // Flag to indicate if a goal has been scored
     private bool _respawnScheduled = false; // Flag to prevent multiple respawn calls
     private const float _RespawnDelay = 1.5f; // Delay before respawning the player
     private float _timer = 60f; // Timer for the game, set to 60 seconds
@@ -22,6 +25,8 @@ public class GameManager : MonoBehaviour
     {
         Instance = this; // Set the singleton instance
         Physics.gravity = new Vector3(0, _customGravity, 0); // Set custom gravity
+        MainCamera.gameObject.SetActive(true); // Activate the main camera
+        GoalCamera.gameObject.SetActive(false); // Deactivate the goal camera
     }
 
     void Update()
@@ -48,6 +53,17 @@ public class GameManager : MonoBehaviour
         if (!_playerAlive && !_respawnScheduled)
         {
             PlayerDead(); // Respawn the player if they are not alive and respawn is not scheduled
+        }
+
+        if (goalScored)
+        {
+            // Trigger Confetti
+            // Invoke a respawn and change the position of spawn
+            // Goal animation for the player
+            Physics.gravity = new Vector3(0, -_customGravity, 0); // Set custom gravity
+            _timerRunning = false; // Stop the timer
+            MainCamera.gameObject.SetActive(false); // Deactivate the main camera
+            GoalCamera.gameObject.SetActive(true); // Activate the goal camera
         }
     }
 
