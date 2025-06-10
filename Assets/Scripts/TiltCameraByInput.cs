@@ -1,5 +1,5 @@
-using UnityEngine;
 using Unity.Cinemachine;
+using UnityEngine;
 
 [ExecuteAlways]
 [SaveDuringPlay]
@@ -7,7 +7,6 @@ using Unity.Cinemachine;
 public class TiltCameraByInput : CinemachineExtension
 {
     public SurfaceAngle angleDetector; // Reference to SurfaceAngle script
-
     public float maxZAngle = 15f;
     public float maxXAngle = 5f;
     public float smoothSpeed = 15f;
@@ -46,7 +45,11 @@ public class TiltCameraByInput : CinemachineExtension
             float surfaceAngle = angleDetector != null ? angleDetector.surfaceAngle : 0f;
 
             float targetSurfaceTilt = surfaceAngle * 0.3f;
-            _currentSurfaceTilt = Mathf.Lerp(_currentSurfaceTilt, targetSurfaceTilt, deltaTime * smoothSpeed);
+            _currentSurfaceTilt = Mathf.Lerp(
+                _currentSurfaceTilt,
+                targetSurfaceTilt,
+                deltaTime * smoothSpeed
+            );
 
             // Total X tilt: base + input + terrain influence
             float totalX = baseXRotation + _currentX + _currentSurfaceTilt;
@@ -99,5 +102,14 @@ public class TiltCameraByInput : CinemachineExtension
                 state.RawPosition = altPos;
             }
         }
+    }
+
+    public void ResetTilt()
+    {
+        _currentZ = 0f;
+        _currentX = 0f;
+        _currentYOffset = 0f;
+        _currentSurfaceTilt = 0f;
+        _wasFalling = false;
     }
 }

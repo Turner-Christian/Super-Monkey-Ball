@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     public Camera GoalCamera; // Reference to the goal camera
     public TextMeshProUGUI TimerText; // UI Text to display the timer
     public TextMeshProUGUI SpeedText; // UI Text to display the speed
+    public TiltCameraByInput tiltCameraByInput; // Reference to the TiltCameraByInput script
     public static Vector3 PlayerStartPosition; // Position to respawn the player
     public static Vector3 PlayerStartRotation; // Rotation to respawn the player
     public static bool PlayerFallen;
@@ -54,17 +55,19 @@ public class GameManager : MonoBehaviour
         {
             PlayerDead(); // Respawn the player if they are not alive and respawn is not scheduled
         }
+    }
 
-        if (goalScored)
-        {
-            // Trigger Confetti
-            // Invoke a respawn and change the position of spawn
-            // Goal animation for the player
-            Physics.gravity = new Vector3(0, -_customGravity, 0); // Set custom gravity
-            _timerRunning = false; // Stop the timer
-            MainCamera.gameObject.SetActive(false); // Deactivate the main camera
-            GoalCamera.gameObject.SetActive(true); // Activate the goal camera
-        }
+    public void GoalScored()
+    {
+        // Trigger Confetti
+        // Invoke a respawn and change the position of spawn
+        // Goal animation for the player
+        goalScored = true; // Set the goal scored flag
+        MainCamera.gameObject.SetActive(false); // Deactivate the main camera
+        GoalCamera.gameObject.SetActive(true); // Activate the goal camera
+        Physics.gravity = new Vector3(0, 0, 0); // Set gravity to zero when the goal is scored
+        Invoke("ReverseGravity", 1f); // Reverse gravity after a short delay
+        _timerRunning = false; // Stop the timer
     }
 
     private void PlayerDead()
@@ -77,6 +80,7 @@ public class GameManager : MonoBehaviour
 
     private void RespawnPlayer()
     {
+        BallController.Instance.rb.rotation = Quaternion.Euler(0, 180f, 0); // Reset player rotation to face the correct direction
         BallController.Instance.transform.position = PlayerStartPosition; // Respawn the player at the start position
         BallController.Instance.rb.linearVelocity = Vector3.zero; // Reset velocity
         BallController.Instance.rb.angularVelocity = Vector3.zero; // Reset angular velocity
@@ -85,5 +89,11 @@ public class GameManager : MonoBehaviour
         _timer = 60f; // Reset the timer to 60 seconds
         _timerRunning = true; // Restart the timer
         _playerAlive = true; // Set player alive state to true
+        tiltCameraByInput.ResetTilt(); // Reset camera tilt
+    }
+
+    private void ReverseGravity()
+    {
+        Physics.gravity = new Vector3(0, -_customGravity, 0); // Reverse the gravity direction
     }
 }

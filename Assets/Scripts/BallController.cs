@@ -26,6 +26,7 @@ public class BallController : MonoBehaviour
 
     void FixedUpdate()
     {
+        Debug.Log("Rotations: " + rb.rotation.eulerAngles);
         if (_shouldDecelerate)
         {
             // Decelerate the ball
@@ -82,7 +83,7 @@ public class BallController : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("DeathBox"))
+        if (other.CompareTag("DeathBox") && GameManager._playerAlive)
         {
             GameManager._playerAlive = false; // Set player fallen state
             Debug.Log("Ball has fallen off the map!");
@@ -90,7 +91,7 @@ public class BallController : MonoBehaviour
         if (other.CompareTag("GoalBox") && GameManager._playerAlive)
         {
             GoalsAnimator.SetTrigger("onGoal"); // Trigger goal animation
-            GameManager.goalScored = true; // Set goal scored state
+            GameManager.Instance.GoalScored(); // Call the GoalScored method in GameManager
             _shouldDecelerate = true; // Set deceleration flag
         }
     }
