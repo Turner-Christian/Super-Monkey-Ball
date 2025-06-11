@@ -80,7 +80,6 @@ public class GameManager : MonoBehaviour
 
     private void RespawnPlayer()
     {
-        BallController.Instance.rb.rotation = Quaternion.Euler(0, 180f, 0); // Reset player rotation to face the correct direction
         BallController.Instance.transform.position = PlayerStartPosition; // Respawn the player at the start position
         BallController.Instance.rb.linearVelocity = Vector3.zero; // Reset velocity
         BallController.Instance.rb.angularVelocity = Vector3.zero; // Reset angular velocity
